@@ -7,7 +7,7 @@ public class MoveMain : MonoBehaviour
     private Vector3 point;
     
     private float speed = 100f,projectileSpeed=800f;
-    Vector3 normVector;
+    Vector2 planeNormVector;
     Vector3 startPosition;
     private float angle,k;
     private Transform  planeTransformSin;
@@ -31,8 +31,8 @@ public class MoveMain : MonoBehaviour
             var _maxY = 190 - b;
             var _minY = 40 - b;
             var vectorY = UnityEngine.Random.Range(_minY, _maxY);
-            normVector = new Vector3(400, vectorY, 0).normalized;
-            k = normVector.y / normVector.x;
+            planeNormVector = new Vector2(400, vectorY).normalized;
+            k = planeNormVector.y / planeNormVector.x;
             startPosition = new Vector3(0, b, 0);
             for (int i = 0; i <= 400; i += 5)
             {               
@@ -59,7 +59,7 @@ public class MoveMain : MonoBehaviour
         }
     }
     private void CreatePlane(){
-        angle = Mathf.Atan2(normVector.y, normVector.x) * Mathf.Rad2Deg;
+        angle = Mathf.Atan2(planeNormVector.y, planeNormVector.x) * Mathf.Rad2Deg;
 
         // _transform3.rotation = Quaternion.Euler(0, 0, angle);
         planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));     
@@ -93,8 +93,8 @@ public class MoveMain : MonoBehaviour
             // time += Time.fixedDeltaTime;
             float vectorY = sinA * Mathf.Cos(Time.fixedDeltaTime * sinB) * sinB;
             // // Debug.Log(time+"---"+vectorY);
-            var normVector = new Vector3(Time.fixedDeltaTime, vectorY, 0).normalized;    
-            angle =Mathf.Atan2(normVector.x, normVector.y) * Mathf.Rad2Deg ;
+            var planeNormVector = new Vector2(Time.fixedDeltaTime, vectorY).normalized;    
+            angle =Mathf.Atan2(planeNormVector.x, planeNormVector.y) * Mathf.Rad2Deg ;
             //     var angle2 = Mathf.Abs(angle);
                 Debug.Log(angle+"=====");
                 planeTransformSin.Rotate(new Vector3(0, 0, angle)* Time.fixedDeltaTime,Space.World);
@@ -113,6 +113,10 @@ public class MoveMain : MonoBehaviour
 
 
     }
+    private void collision(){
+
+    }
+    
 
 
 
