@@ -8,7 +8,7 @@ public class MoveMain : MonoBehaviour
     
     private float speed = 100f,projectileSpeed=800f;
     Vector2 planeNormVector;
-    Vector3 startPosition;
+    Vector2 startPosition;
     private float angle,k;
     private Transform  planeTransformSin;
     public GameObject planePrefab,marker,ppo,intersectionPointPrefab;
@@ -33,7 +33,7 @@ public class MoveMain : MonoBehaviour
             var vectorY = UnityEngine.Random.Range(_minY, _maxY);
             planeNormVector = new Vector2(400, vectorY).normalized;
             k = planeNormVector.y / planeNormVector.x;
-            startPosition = new Vector3(0, b, 0);
+            startPosition = new Vector2(0, b);
             for (int i = 0; i <= 400; i += 5)
             {               
                 point.x = i;
@@ -65,7 +65,7 @@ public class MoveMain : MonoBehaviour
         planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));     
     }
     private void CreatePlaneSin(){
-        startPosition = new Vector3(0, 120, 0);
+        startPosition = new Vector2(0, 120);
         planeTransformSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;
         
     }
