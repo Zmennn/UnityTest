@@ -6,19 +6,23 @@ public class MoveMain : MonoBehaviour
 {
     private Vector3 point;
     
-    private float speed = 100f;
+    private float speed = 100f,projectileSpeed=800f;
     Vector3 normVector;
     Vector3 startPosition;
-    private float angle;
-    private Transform planeTr, planeTrSin;
-    public GameObject planePrefab,marker;
+    private float angle,k;
+    private Transform  planeTransformSin;
+    public GameObject planePrefab,marker,ppo,intersectionPointPrefab;
     private float sinA = 30f,sinB = 0.05f;
+    private Vector2 pointOfIntersection;
+    private GameObject intersectionPoint,planeObj;
+    
    
     // private float arg;
     private float time;
 
     void Start()
     {
+       intersectionPoint= Instantiate(intersectionPointPrefab, new Vector2(0,0), Quaternion.identity);
         ChangeTrajectory();
     }
     private void CreateTrajectory()
@@ -28,7 +32,7 @@ public class MoveMain : MonoBehaviour
             var _minY = 40 - b;
             var vectorY = UnityEngine.Random.Range(_minY, _maxY);
             normVector = new Vector3(400, vectorY, 0).normalized;
-            var k = normVector.y / normVector.x;
+            k = normVector.y / normVector.x;
             startPosition = new Vector3(0, b, 0);
             for (int i = 0; i <= 400; i += 5)
             {               
@@ -58,28 +62,34 @@ public class MoveMain : MonoBehaviour
         angle = Mathf.Atan2(normVector.y, normVector.x) * Mathf.Rad2Deg;
 
         // _transform3.rotation = Quaternion.Euler(0, 0, angle);
-        planeTr = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle)).GetComponent<Transform>() as Transform;     
+        planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));     
     }
     private void CreatePlaneSin(){
         startPosition = new Vector3(0, 120, 0);
-        planeTrSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;
+        planeTransformSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;
         
     }
 
 
     private void FixedUpdate()
     {
-        if (planeTr)
+        if (planeObj)
         {
-            planeTr.Translate(new Vector3(1, 0, 0) * speed * Time.fixedDeltaTime);
-            if (planeTr.position.x > 400)
+            planeObj.GetComponent<Transform>().Translate(new Vector3(1, 0, 0) * speed * Time.fixedDeltaTime);
+            if (planeObj.GetComponent<Transform>().position.x > 400)
             {
-                Destroy(planeTr.gameObject);
+                Destroy(planeObj);
                 ClearTrajectory();
                 ChangeTrajectory();
+                return;
             }
+            Vector2 pos1 = planeObj.GetComponent<Transform>().position;
+            Vector2 pos2 = ppo.transform.position;
+
+        
+       
         }
-        else if (planeTrSin) {
+        else if (planeTransformSin) {
             // time += Time.fixedDeltaTime;
             float vectorY = sinA * Mathf.Cos(Time.fixedDeltaTime * sinB) * sinB;
             // // Debug.Log(time+"---"+vectorY);
@@ -87,9 +97,9 @@ public class MoveMain : MonoBehaviour
             angle =Mathf.Atan2(normVector.x, normVector.y) * Mathf.Rad2Deg ;
             //     var angle2 = Mathf.Abs(angle);
                 Debug.Log(angle+"=====");
-                planeTrSin.Rotate(new Vector3(0, 0, angle)* Time.fixedDeltaTime,Space.World);
-                planeTrSin.Translate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
-            // planeTrSin.position = startPosition + transform.up * Mathf.Sin(Time.time * 5f) * 50f;
+                planeTransformSin.Rotate(new Vector3(0, 0, angle)* Time.fixedDeltaTime,Space.World);
+                planeTransformSin.Translate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
+            // planeTransformSin.position = startPosition + transform.up * Mathf.Sin(Time.time * 5f) * 50f;
         }
    }
 
@@ -103,11 +113,10 @@ public class MoveMain : MonoBehaviour
 
 
     }
-    private void CollisionCalculator(){
-        
-    }
 
 
+
+  
 }
 
 // 1 / (Math.Atan(x2) * 180 / Math.PI))
