@@ -8,21 +8,19 @@ public class MoveMain : MonoBehaviour
     
     private float speed = 100f,projectileSpeed=800f;
     Vector2 planeNormVector;
-    Vector2 startPosition;
+    private Vector2 startPosition,ppoPosition;
     private float angle,k;
     private Transform  planeTransformSin;
     public GameObject planePrefab,marker,ppo,intersectionPointPrefab;
     private float sinA = 30f,sinB = 0.05f;
     private Vector2 pointOfIntersection;
     private GameObject intersectionPoint,planeObj;
-    
-   
-    // private float arg;
     private float time;
 
     void Start()
     {
        intersectionPoint= Instantiate(intersectionPointPrefab, new Vector2(0,0), Quaternion.identity);
+       ppoPosition=ppo.GetComponent<Transform>().position;
         ChangeTrajectory();
     }
     private void CreateTrajectory()
@@ -75,7 +73,10 @@ public class MoveMain : MonoBehaviour
     {
         if (planeObj)
         {
-            planeObj.GetComponent<Transform>().Translate(new Vector3(1, 0, 0) * speed * Time.fixedDeltaTime);
+            planeObj.GetComponent<Transform>().Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
+
+
+            collision(planeObj.GetComponent<Transform>().position);
             if (planeObj.GetComponent<Transform>().position.x > 400)
             {
                 Destroy(planeObj);
@@ -113,7 +114,13 @@ public class MoveMain : MonoBehaviour
 
 
     }
-    private void collision(){
+    private void collision(Vector2 targetPosition)
+    {
+        Vector2 targetDirection = targetPosition - ppoPosition;
+        float distance=targetDirection.magnitude;
+        float flayTime=distance/projectileSpeed;
+        Vector2 targetDrive = targetDirection * flayTime;
+        Vector2 newTargetPosition =(planeObj.GetComponent<Transform>().position)+targetDrive ;
 
     }
     
