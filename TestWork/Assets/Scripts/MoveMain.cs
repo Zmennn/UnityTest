@@ -37,7 +37,8 @@ public class MoveMain : MonoBehaviour
                 point.x = i;
                 point.y = i*k+b;
                 Instantiate(marker, point, Quaternion.identity);
-            }       
+            }
+              
     }
     private void CreateTrajectorySin(){
         var b = 120;
@@ -119,8 +120,15 @@ public class MoveMain : MonoBehaviour
         Vector2 targetDirection = targetPosition - ppoPosition;
         float distance=targetDirection.magnitude;
         float flayTime=distance/projectileSpeed;
-        Vector2 targetDrive = targetDirection * flayTime;
-        Vector2 newTargetPosition =(planeObj.GetComponent<Transform>().position)+targetDrive ;
+        Vector2 targetDrive = planeNormVector * flayTime*speed;
+        Vector2 currentPlanePosition = planeObj.GetComponent<Transform>().position ;
+        Vector2 newTargetPosition = currentPlanePosition + targetDrive;
+        if(!intersectionPoint)
+        {
+            GameObject intersectionPoint= Instantiate(intersectionPointPrefab, newTargetPosition, Quaternion.Euler(0, 0, 0));
+        }
+        Transform intersectionPointTransform = intersectionPoint.GetComponent<Transform>() as Transform;
+        intersectionPointTransform.position = newTargetPosition;
 
     }
     
