@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class shot : MonoBehaviour
+public class Shot : MonoBehaviour
 {
     private GameObject pointOfIntersection, projectile, containerTrajectory, traceContainer;
     public GameObject addPoint, containerPrefab, projectilePrefab,tracePrefab,cam;
     private MoveMain moveMain;
-
     private Vector2 ppoPosition,point;
     bool isLock = false;
     
@@ -78,10 +77,6 @@ public class shot : MonoBehaviour
 
         if (!Input.GetKey(KeyCode.Space) && isLock){
             isLock = false;
-        }
-        
-        
+        }       
     }
 }
-// new Vector2(0, 0)
-// ppoPosition

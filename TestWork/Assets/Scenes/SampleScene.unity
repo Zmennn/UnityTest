@@ -183,7 +183,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.0627451, g: 0.2, b: 0.03137255, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -330,3 +330,4 @@ MonoBehaviour:
   intersectionPointPrefab: {fileID: 159794237757807572, guid: 763b03c4c744ec24a85e3a4e502a2ae2, type: 3}
   addPointPrefab: {fileID: 3629086747595562808, guid: 93f65c3372f81994aadd64c7c3f4a518, type: 3}
   containerPrefab: {fileID: 2281857635341812706, guid: faf860301e82cdf439dadd0345ab598d, type: 3}
+  tracePrefab: {fileID: 120118212113659819, guid: 0f117b30ffd0a9f4dbe1e8d3eb082ecf, type: 3}

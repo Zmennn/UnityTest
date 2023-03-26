@@ -10,7 +10,7 @@ public class MoveMain : MonoBehaviour
     private Vector2 startPosition,ppoPosition;
     private float angle,k;
     private Transform  planeTransformSin, planeTransform, addPointTransform;
-    public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab;
+    public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab,tracePrefab;
     private float sinA = 30f,sinB = 0.05f;
     private Vector2 pointOfIntersection;
     private GameObject intersectionPoint,planeObj,addPoint,planeContainer;
@@ -50,6 +50,7 @@ public class MoveMain : MonoBehaviour
         planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));
         planeObj.name = "plane";
         planeTransform = planeObj.transform;
+        planeTransform.parent = planeContainer.transform;
     }
     private void CreateTrajectorySin(){
         var b = 120;
@@ -61,14 +62,6 @@ public class MoveMain : MonoBehaviour
         }
         
     }
-    // private void ClearTrajectory(){
-    //   var  marks = GameObject.FindGameObjectsWithTag("Mark");
-     
-    //     for (int i = 0; i < marks.Length; i++)
-    //     {
-    //         Destroy(marks[i]);
-    //     }
-    // }
     private void CreatePlaneSin(){
         startPosition = new Vector2(0, 120);
         planeTransformSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;
@@ -81,19 +74,20 @@ public class MoveMain : MonoBehaviour
         if (planeObj)
         {
             planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
-
-            pointCollision(planeTransform.position);
-
-            if (planeTransform.position.x > 400)
+            for (short i = 0; i < 5;i++)
             {
-                Destroy(planeContainer);
-                Destroy(planeObj);
-                ChangeTrajectory();
-                return;
+                Vector2 randomVector = new Vector2(Random.Range(-.8f, .8f), Random.Range(-2.3f, 2.3f));
+                Vector2 posVector = new Vector2(planeTransform.position.x, planeTransform.position.y);
+                var trace = Instantiate(tracePrefab, posVector + randomVector + new Vector2(-9, -9 * k), Quaternion.identity);
+                trace.transform.parent = planeContainer.transform;
             }
 
-            // Vector2 pos1 = planeTransform.position;
-            // Vector2 pos2 = ppo.transform.position;       
+            pointCollision(planeTransform.position);
+            if (planeTransform.position.x > 400)
+            {
+                DestroyPlane();
+                return;
+            }     
         }
         else if (planeTransformSin) {
             // time += Time.fixedDeltaTime;
@@ -107,6 +101,11 @@ public class MoveMain : MonoBehaviour
                 planeTransformSin.Translate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
             // planeTransformSin.position = startPosition + transform.up * Mathf.Sin(Time.time * 5f) * 50f;
         }
+   }
+
+   public void DestroyPlane(){
+        Destroy(planeContainer);
+        ChangeTrajectory();
    }
 
     private void ChangeTrajectory()
@@ -144,15 +143,32 @@ public class MoveMain : MonoBehaviour
                 processTargetPosition = newTargetPosition;
             }else{
                 allowContinue = false;
-                intersectionPoint.transform.position = newTargetPosition;
                 Color colorGreen = new Color(1f, 230f, 0.00f, 1.00f);
-                intersectionPoint.GetComponent<SpriteRenderer>().color = colorGreen;
+
+                if(newTargetPosition.x<-10f||newTargetPosition.x >420)
+                {
+                    intersectionPoint.SetActive(false);
+                } else
+                {
+                    intersectionPoint.SetActive(true);
+                    intersectionPoint.transform.position = newTargetPosition;
+                    intersectionPoint.GetComponent<SpriteRenderer>().color = colorGreen;
+                }                
             }
             if(i>10){
                 allowContinue = false;
-                intersectionPoint.transform.position = newTargetPosition;
-                Color colorRed = new Color(190f, 0f, 0f, 1.0f); 
-                intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;
+                Color colorRed = new Color(190f, 0f, 0f, 1.0f);
+
+                if (newTargetPosition.x < -10f || newTargetPosition.x > 420)
+                {
+                    intersectionPoint.SetActive(false);
+                }
+                else
+                {
+                    intersectionPoint.SetActive(true);
+                    intersectionPoint.transform.position = newTargetPosition;
+                    intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;
+                }
             }                       
         }        
     }
@@ -163,11 +179,3 @@ public class MoveMain : MonoBehaviour
   
 }
 
-// 1 / (Math.Atan(x2) * 180 / Math.PI))
-
-// radians = Math.Atan(result);
-
-
-// angle = radians * (180 / Math.PI);
-
-// speedV = Random.Range(0.5f, 3); // при старте зададим диапазон скорости от 0.5 до 3
