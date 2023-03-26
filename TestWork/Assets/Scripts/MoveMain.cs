@@ -5,7 +5,7 @@ using UnityEngine;
 public class MoveMain : MonoBehaviour
 {
     private Vector3 point;   
-    public float speed = 30f,projectileSpeed=80f;
+    public float speed = 20f,projectileSpeed=150f;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
     private float angle,k;
@@ -61,14 +61,14 @@ public class MoveMain : MonoBehaviour
         }
         
     }
-    private void ClearTrajectory(){
-      var  marks = GameObject.FindGameObjectsWithTag("Mark");
+    // private void ClearTrajectory(){
+    //   var  marks = GameObject.FindGameObjectsWithTag("Mark");
      
-        for (int i = 0; i < marks.Length; i++)
-        {
-            Destroy(marks[i]);
-        }
-    }
+    //     for (int i = 0; i < marks.Length; i++)
+    //     {
+    //         Destroy(marks[i]);
+    //     }
+    // }
     private void CreatePlaneSin(){
         startPosition = new Vector2(0, 120);
         planeTransformSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class shot : MonoBehaviour
 {
-    private GameObject pointOfIntersection, projectile, containerTrajectory;
+    private GameObject pointOfIntersection, projectile, containerTrajectory, traceContainer;
     public GameObject addPoint, containerPrefab, projectilePrefab,tracePrefab,cam;
     private MoveMain moveMain;
 
@@ -23,10 +23,22 @@ public class shot : MonoBehaviour
     {
         if (projectile)
         {
-            projectile.transform.Translate(new Vector2(1, 0) * moveMain.projectileSpeed * Time.fixedDeltaTime);
-            Vector2 randomVector = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            Vector2 posVector = new Vector2(projectile.transform.position.x, projectile.transform.position.y);
-            Instantiate(tracePrefab, posVector + randomVector, Quaternion.identity);
+            var projectiles = GameObject.FindGameObjectsWithTag("projectile");
+
+            for (int i = 0; i < projectiles.Length; i++)
+            {
+                if(projectiles[i].transform.position.x<0||projectiles[i].transform.position.x>440||
+                projectiles[i].transform.position.y < 0 || projectiles[i].transform.position.y > 220)
+                {
+                    Destroy(projectiles[i].transform.parent.gameObject);
+                    continue;
+                }
+                projectiles[i].transform.Translate(new Vector2(1, 0) * moveMain.projectileSpeed * Time.fixedDeltaTime);
+                Vector2 randomVector = new Vector2(Random.Range(-0.8f, 0.8f), Random.Range(-0.3f, 0.3f));
+                Vector2 posVector = new Vector2(projectiles[i].transform.position.x, projectiles[i].transform.position.y);
+                var trace=Instantiate(tracePrefab, posVector + randomVector, Quaternion.identity);
+                trace.transform.parent = traceContainer.transform;
+            }
 
         }
 
@@ -46,8 +58,8 @@ public class shot : MonoBehaviour
         Vector2 targetAbs = new Vector2(targetMiddle.x, targetMiddle.y);
         Vector2 target = targetAbs - ppoPosition;
         Vector2 targetNorm = target.normalized;
-        // GameObject projectileTrajectoryContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
         containerTrajectory = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
+        containerTrajectory.name = "containerTrajectory";
         for (int i = 1; i < 300; i += 5)
         {
             GameObject elem = Instantiate(addPoint, new Vector2(0, 0), Quaternion.identity);
@@ -56,13 +68,14 @@ public class shot : MonoBehaviour
         }
 
         if ((Input.GetKey(KeyCode.Space)&&!isLock)){           
-            isLock = true;                
-            GameObject container = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
-
+            isLock = true;
+            traceContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
+            traceContainer.name = "ProjectileContainer";
             float angle = Mathf.Atan2( targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
-            projectile = Instantiate(projectilePrefab, ppoPosition , Quaternion.Euler(0, 0, angle));
+            projectile = Instantiate(projectilePrefab, ppoPosition , Quaternion.Euler(0, 0, angle));           
+            projectile.transform.parent=traceContainer.transform;
         }
-        
+
         if (!Input.GetKey(KeyCode.Space) && isLock){
             isLock = false;
         }
