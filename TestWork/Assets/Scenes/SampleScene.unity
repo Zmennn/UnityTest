@@ -223,6 +223,7 @@ MonoBehaviour:
   addPoint: {fileID: 3629086747595562808, guid: 93f65c3372f81994aadd64c7c3f4a518, type: 3}
   containerPrefab: {fileID: 2281857635341812706, guid: faf860301e82cdf439dadd0345ab598d, type: 3}
   projectilePrefab: {fileID: 9158126081337330762, guid: 451a004e304aaaf40ae13e4093c42344, type: 3}
+  tracePrefab: {fileID: 120118212113659819, guid: 0f117b30ffd0a9f4dbe1e8d3eb082ecf, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,3 +326,4 @@ MonoBehaviour:
   ppo: {fileID: 460337169}
   intersectionPointPrefab: {fileID: 159794237757807572, guid: 763b03c4c744ec24a85e3a4e502a2ae2, type: 3}
   addPointPrefab: {fileID: 3629086747595562808, guid: 93f65c3372f81994aadd64c7c3f4a518, type: 3}
+  containerPrefab: {fileID: 2281857635341812706, guid: faf860301e82cdf439dadd0345ab598d, type: 3}

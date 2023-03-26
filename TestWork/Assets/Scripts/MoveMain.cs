@@ -5,7 +5,7 @@ using UnityEngine;
 public class MoveMain : MonoBehaviour
 {
     private Vector3 point;   
-    private float speed = 80f,projectileSpeed=80f;
+    public float speed = 30f,projectileSpeed=80f;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
     private float angle,k;
@@ -82,7 +82,6 @@ public class MoveMain : MonoBehaviour
         {
             planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
 
-
             pointCollision(planeTransform.position);
 
             if (planeTransform.position.x > 400)
@@ -92,11 +91,9 @@ public class MoveMain : MonoBehaviour
                 ChangeTrajectory();
                 return;
             }
-            Vector2 pos1 = planeTransform.position;
-            Vector2 pos2 = ppo.transform.position;
 
-        
-       
+            // Vector2 pos1 = planeTransform.position;
+            // Vector2 pos2 = ppo.transform.position;       
         }
         else if (planeTransformSin) {
             // time += Time.fixedDeltaTime;
