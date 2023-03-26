@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 460337170}
   - component: {fileID: 460337172}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: Ppo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -208,27 +208,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &460337172
-Rigidbody2D:
-  serializedVersion: 4
+--- !u!114 &460337172
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 460337169}
-  m_BodyType: 0
-  m_Simulated: 0
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a217f74780b235459ff3a248291f31e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addPoint: {fileID: 3629086747595562808, guid: 93f65c3372f81994aadd64c7c3f4a518, type: 3}
+  containerPrefab: {fileID: 2281857635341812706, guid: faf860301e82cdf439dadd0345ab598d, type: 3}
+  projectilePrefab: {fileID: 9158126081337330762, guid: 451a004e304aaaf40ae13e4093c42344, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,3 +324,4 @@ MonoBehaviour:
   marker: {fileID: 2313740472436937064, guid: ffda34c90b7f1bb44a0af2b3ad4bb3df, type: 3}
   ppo: {fileID: 460337169}
   intersectionPointPrefab: {fileID: 159794237757807572, guid: 763b03c4c744ec24a85e3a4e502a2ae2, type: 3}
+  addPointPrefab: {fileID: 3629086747595562808, guid: 93f65c3372f81994aadd64c7c3f4a518, type: 3}

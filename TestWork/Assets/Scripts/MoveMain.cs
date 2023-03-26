@@ -4,43 +4,52 @@ using UnityEngine;
 
 public class MoveMain : MonoBehaviour
 {
-    private Vector3 point;
-    
-    private float speed = 100f,projectileSpeed=200f;
+    private Vector3 point;   
+    private float speed = 80f,projectileSpeed=80f;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
     private float angle,k;
-    private Transform  planeTransformSin, planeTransform,intersectionPointTransform, addPointTransform;
-    public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab;
+    private Transform  planeTransformSin, planeTransform, addPointTransform;
+    public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab;
     private float sinA = 30f,sinB = 0.05f;
     private Vector2 pointOfIntersection;
-    private GameObject intersectionPoint,planeObj,addPoint;
+    private GameObject intersectionPoint,planeObj,addPoint,planeContainer;
     private float time;
-    // private bool allowContinue = true;
+
 
     void Start()
-    {
-       
+    {       
        ppoPosition=ppo.GetComponent<Transform>().position;
         ChangeTrajectory();
     }
-    private void CreateTrajectory()
+    private void CreateLin()
     {
-            var b = UnityEngine.Random.Range(50, 170);
-            var _maxY = 190 - b;
-            var _minY = 40 - b;
-            var vectorY = UnityEngine.Random.Range(_minY, _maxY);
-            planeNormVector = new Vector2(400, vectorY).normalized;
-            k = planeNormVector.y / planeNormVector.x;
-            startPosition = new Vector2(0, b);
-            for (int i = 0; i <= 400; i += 5)
+        planeContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
+        planeContainer.name = "planeContainer";
+
+        var b = UnityEngine.Random.Range(50, 170);
+        var _maxY = 190 - b;
+        var _minY = 40 - b;
+        var vectorY = UnityEngine.Random.Range(_minY, _maxY);
+        planeNormVector = new Vector2(400, vectorY).normalized;
+        k = planeNormVector.y / planeNormVector.x;
+        startPosition = new Vector2(0, b);
+        for (int i = 0; i <= 400; i += 5)
             {               
-                point.x = i;
-                point.y = i*k+b;
-                Instantiate(marker, point, Quaternion.identity);
+            point.x = i;
+            point.y = i*k+b;
+            GameObject elem=Instantiate(marker, point, Quaternion.identity);
+            elem.name = "planeTrajectoryMark";
+            elem.transform.parent = planeContainer.transform;
             }
-            CreatePlane();
-              
+     
+        intersectionPoint = Instantiate(intersectionPointPrefab, new Vector2(0, 0), Quaternion.identity);
+        intersectionPoint.transform.parent = planeContainer.transform;
+
+        angle = Mathf.Atan2(planeNormVector.y, planeNormVector.x) * Mathf.Rad2Deg;
+        planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));
+        planeObj.name = "plane";
+        planeTransform = planeObj.transform;
     }
     private void CreateTrajectorySin(){
         var b = 120;
@@ -60,20 +69,6 @@ public class MoveMain : MonoBehaviour
             Destroy(marks[i]);
         }
     }
-    private void CreatePlane(){
-        angle = Mathf.Atan2(planeNormVector.y, planeNormVector.x) * Mathf.Rad2Deg;
-
-        // _transform3.rotation = Quaternion.Euler(0, 0, angle);
-        intersectionPoint = Instantiate(intersectionPointPrefab, new Vector2(0, 0), Quaternion.identity);
-        intersectionPointTransform = intersectionPoint.GetComponent<Transform>() as Transform;
-
-        addPoint = Instantiate(addPointPrefab, new Vector2(0, 0), Quaternion.identity);
-        addPointTransform = addPoint.GetComponent<Transform>() as Transform;
-
-        planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));
-        planeTransform = planeObj.GetComponent<Transform>();
-        
-    }
     private void CreatePlaneSin(){
         startPosition = new Vector2(0, 120);
         planeTransformSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;
@@ -88,13 +83,12 @@ public class MoveMain : MonoBehaviour
             planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
 
 
-            collision(planeTransform.position);
+            pointCollision(planeTransform.position);
+
             if (planeTransform.position.x > 400)
             {
+                Destroy(planeContainer);
                 Destroy(planeObj);
-                ClearTrajectory();
-                Destroy(intersectionPoint);
-                Destroy(addPoint);
                 ChangeTrajectory();
                 return;
             }
@@ -120,15 +114,10 @@ public class MoveMain : MonoBehaviour
 
     private void ChangeTrajectory()
     {
-        Invoke("CreateTrajectory", .9f);
-        
-
+        Invoke("CreateLin", .9f);
         // Invoke("CreateTrajectorySin", .9f);
-       
-
-
     }
-    private void collision(Vector2 targetPosition)
+    private void pointCollision(Vector2 targetPosition)
     {
         bool allowContinue = true;
         int i = 0;
@@ -143,12 +132,8 @@ public class MoveMain : MonoBehaviour
             Vector2 targetDrive = planeNormVector * flayTime * speed;
             Vector2 newTargetPosition = currentPlanePosition + targetDrive;
 
-            
-
-
             //перевірка на влучання
-            Vector2 newTargetDirection = newTargetPosition - ppoPosition;
-           
+            Vector2 newTargetDirection = newTargetPosition - ppoPosition;           
             float newDistance = newTargetDirection.magnitude;
             float newFlayTime = newDistance / projectileSpeed;
             Vector2 newTargetDrive = planeNormVector * newFlayTime * speed;
@@ -157,21 +142,22 @@ public class MoveMain : MonoBehaviour
            
             Vector2 difference = controlTargetPosition - newTargetPosition;
             i++;
-            Debug.Log(difference.magnitude + "=====" + i);
-            if (difference.magnitude > 3)
+            if (difference.magnitude > 2)
             {
                 processTargetPosition = newTargetPosition;
             }else{
                 allowContinue = false;
+                intersectionPoint.transform.position = newTargetPosition;
+                Color colorGreen = new Color(1f, 230f, 0.00f, 1.00f);
+                intersectionPoint.GetComponent<SpriteRenderer>().color = colorGreen;
             }
             if(i>10){
                 allowContinue = false;
-            }
-            intersectionPointTransform.position = newTargetPosition;
-            addPointTransform.position = controlTargetPosition;
-                      
-        }
-        
+                intersectionPoint.transform.position = newTargetPosition;
+                Color colorRed = new Color(190f, 0f, 0f, 1.0f); 
+                intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;
+            }                       
+        }        
     }
     
 
