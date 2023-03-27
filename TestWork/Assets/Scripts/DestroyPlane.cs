@@ -4,15 +4,27 @@ using UnityEngine;
 
 public class DestroyPlane : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public GameObject explosionAnimation;
+    private MoveMain moveMain;
+    
+
+    private void Start()
     {
-        
+        GameObject cam = GameObject.Find("Main Camera");
+        moveMain = cam.GetComponent<MoveMain>();       
     }
 
-    // Update is called once per frame
-    void Update()
+
+    private void OnCollisionEnter2D(Collision2D other)
     {
+        
+        if(other.gameObject.name=="projectile(Clone)"){
+            Instantiate(explosionAnimation,transform.position,Quaternion.identity);
+            moveMain.DestroyPlane();
+            Destroy(other.gameObject.transform.parent.gameObject);
+        }
         
     }
 }
+
