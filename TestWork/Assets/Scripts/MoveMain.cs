@@ -11,7 +11,7 @@ public class MoveMain : MonoBehaviour
     private float angle,k;
     private Transform  planeTransformSin, planeTransform, addPointTransform;
     public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab,tracePrefab;
-    private float magnitude = 30f,frequency = 0.05f;
+    private float magnitude,frequency;
     private Vector2 pointOfIntersection;
     private GameObject intersectionPoint,planeObj,addPoint,planeContainer;
     private float time;
@@ -26,8 +26,6 @@ public class MoveMain : MonoBehaviour
     private void CreateLin()
     {
         trajectoryType = "lin";
-        planeContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
-        planeContainer.name = "planeContainer";
 
         var b = UnityEngine.Random.Range(50, 170);
         var _maxY = 190 - b;
@@ -45,22 +43,29 @@ public class MoveMain : MonoBehaviour
             elem.transform.parent = planeContainer.transform;
             }
      
-        intersectionPoint = Instantiate(intersectionPointPrefab, new Vector2(0, 0), Quaternion.identity);
-        intersectionPoint.transform.parent = planeContainer.transform;
+        
 
         angle = Mathf.Atan2(planeNormVector.y, planeNormVector.x) * Mathf.Rad2Deg;
-        planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));
-        planeObj.name = "plane";
-        planeTransform = planeObj.transform;
-        planeTransform.parent = planeContainer.transform;
+        planeTransform.Rotate(new Vector3(0, 0, angle));
+        planeTransform.position = startPosition;
+
+        // planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));
+        // planeObj.name = "plane";
+        // planeTransform = planeObj.transform;
+        // planeTransform.parent = planeContainer.transform;
     }
 
     private void CreateSin(){
         trajectoryType = "sin";
-        planeContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
-        planeContainer.name = "planeContainer";
+        
+        int b = UnityEngine.Random.Range(70, 170);
+        startPosition = new Vector2(0, b);
+        int d1 = 170 - b;
+        int d2 = b - 50;
+        int delta=Mathf.Min(d1, d2);
+        magnitude = UnityEngine.Random.Range(20, 20 + delta);
+        frequency=UnityEngine.Random.Range(2, 10)*0.01f;
 
-        var b = 120;
         for (int i = 0; i <= 400; i += 2)
         {
             point.x = i;
@@ -69,18 +74,9 @@ public class MoveMain : MonoBehaviour
             elem.name = "planeTrajectoryMark";
             elem.transform.parent = planeContainer.transform;
         }
-
-        intersectionPoint = Instantiate(intersectionPointPrefab, new Vector2(0, 0), Quaternion.identity);
-        intersectionPoint.transform.parent = planeContainer.transform;
-
-        planeObj = Instantiate(planePrefab, startPosition, Quaternion.identity);
-        planeObj.name = "plane";
-        planeTransform = planeObj.transform;
-        planeTransform.parent = planeContainer.transform;
-        planeTransform.position = new Vector2(planeTransform.position.x,b);
-
+     
+        planeTransform.position = startPosition = new Vector2(0, b); ;
         angle = 0;
-
     }
 
     float x;
@@ -104,12 +100,9 @@ public class MoveMain : MonoBehaviour
             }
 
         }
-        if (planeObj&&trajectoryType == "lin")
+        if (planeObj && trajectoryType == "lin")
         {
-            planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
-            
-
-            
+            planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);         
         }
         else if (planeObj && trajectoryType == "sin")
         {
@@ -129,10 +122,26 @@ public class MoveMain : MonoBehaviour
         ChangeTrajectory();
    }
 
-    private void ChangeTrajectory()
+   private void ChangeTrajectory(){
+        Invoke("ChangeTrajectoryWait", 0.5f);
+    }
+
+    private void ChangeTrajectoryWait()
     {
-        Invoke("CreateLin", .9f);
-        // Invoke("CreateSin", .9f);
+        planeContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
+        planeContainer.name = "planeContainer";
+
+        intersectionPoint = Instantiate(intersectionPointPrefab, new Vector2(0, 0), Quaternion.identity);
+        intersectionPoint.transform.parent = planeContainer.transform;
+
+        planeObj = Instantiate(planePrefab, startPosition, Quaternion.identity);
+        planeObj.name = "plane";
+        planeTransform = planeObj.transform;
+        planeTransform.parent = planeContainer.transform;
+
+        // CreateLin();
+        CreateSin();
+
     }
     private void pointCollision(Vector2 targetPosition)
     {
