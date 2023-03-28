@@ -5,16 +5,17 @@ using UnityEngine;
 public class MoveMain : MonoBehaviour
 {
     private Vector3 point;   
-    public float speed = 20f,projectileSpeed=150f;
+    public float speed = 80f,projectileSpeed=160f;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
     private float angle,k;
     private Transform  planeTransformSin, planeTransform, addPointTransform;
     public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab,tracePrefab;
-    private float sinA = 30f,sinB = 0.05f;
+    private float magnitude = 30f,frequency = 0.05f;
     private Vector2 pointOfIntersection;
     private GameObject intersectionPoint,planeObj,addPoint,planeContainer;
     private float time;
+    private string trajectoryType;
 
 
     void Start()
@@ -24,6 +25,7 @@ public class MoveMain : MonoBehaviour
     }
     private void CreateLin()
     {
+        trajectoryType = "lin";
         planeContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
         planeContainer.name = "planeContainer";
 
@@ -52,54 +54,73 @@ public class MoveMain : MonoBehaviour
         planeTransform = planeObj.transform;
         planeTransform.parent = planeContainer.transform;
     }
-    private void CreateTrajectorySin(){
+
+    private void CreateSin(){
+        trajectoryType = "sin";
+        planeContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
+        planeContainer.name = "planeContainer";
+
         var b = 120;
         for (int i = 0; i <= 400; i += 2)
         {
             point.x = i;
-            point.y =  Mathf.Sin(i * sinB)* sinA + b;
-            Instantiate(marker, point, Quaternion.identity);
+            point.y =  Mathf.Sin(i * frequency)* magnitude + b;
+            GameObject elem = Instantiate(marker, point, Quaternion.identity);
+            elem.name = "planeTrajectoryMark";
+            elem.transform.parent = planeContainer.transform;
         }
-        
-    }
-    private void CreatePlaneSin(){
-        startPosition = new Vector2(0, 120);
-        planeTransformSin = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, 0)).GetComponent<Transform>() as Transform;
-        
+
+        intersectionPoint = Instantiate(intersectionPointPrefab, new Vector2(0, 0), Quaternion.identity);
+        intersectionPoint.transform.parent = planeContainer.transform;
+
+        planeObj = Instantiate(planePrefab, startPosition, Quaternion.identity);
+        planeObj.name = "plane";
+        planeTransform = planeObj.transform;
+        planeTransform.parent = planeContainer.transform;
+        planeTransform.position = new Vector2(planeTransform.position.x,b);
+
+        angle = 0;
+
     }
 
-
+    float x;
     private void FixedUpdate()
     {
         if (planeObj)
         {
-            planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
-            for (short i = 0; i < 5;i++)
+            for (short i = 0; i < 5; i++)
             {
                 Vector2 randomVector = new Vector2(Random.Range(-.8f, .8f), Random.Range(-2.3f, 2.3f));
                 Vector2 posVector = new Vector2(planeTransform.position.x, planeTransform.position.y);
-                var trace = Instantiate(tracePrefab, posVector + randomVector + new Vector2(-9, -9 * k), Quaternion.identity);
+                var position = new Vector2(planeTransform.GetChild(0).transform.position.x, planeTransform.GetChild(0).transform.position.y);
+                var trace = Instantiate(tracePrefab, position + randomVector, Quaternion.identity);
                 trace.transform.parent = planeContainer.transform;
             }
-
             pointCollision(planeTransform.position);
             if (planeTransform.position.x > 400)
             {
                 DestroyPlane();
                 return;
-            }     
+            }
+
         }
-        else if (planeTransformSin) {
-            // time += Time.fixedDeltaTime;
-            float vectorY = sinA * Mathf.Cos(Time.fixedDeltaTime * sinB) * sinB;
-            // // Debug.Log(time+"---"+vectorY);
-            var planeNormVector = new Vector2(Time.fixedDeltaTime, vectorY).normalized;    
-            angle =Mathf.Atan2(planeNormVector.x, planeNormVector.y) * Mathf.Rad2Deg ;
-            //     var angle2 = Mathf.Abs(angle);
-                Debug.Log(angle+"=====");
-                planeTransformSin.Rotate(new Vector3(0, 0, angle)* Time.fixedDeltaTime,Space.World);
-                planeTransformSin.Translate(new Vector3(1, 0, 0) * 50 * Time.fixedDeltaTime);
-            // planeTransformSin.position = startPosition + transform.up * Mathf.Sin(Time.time * 5f) * 50f;
+        if (planeObj&&trajectoryType == "lin")
+        {
+            planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
+            
+
+            
+        }
+        else if (planeObj && trajectoryType == "sin")
+        {
+            float x = planeTransform.position.x;
+            float y_prime = magnitude * frequency * Mathf.Cos(x * frequency); // похідна функції у точці x
+            Vector2 tangent = new Vector2(x, y_prime).normalized;
+            float angleCurrent = Mathf.Atan(Mathf.Cos(x * frequency) * frequency * magnitude) * Mathf.Rad2Deg;
+            float angelDelta = angleCurrent - angle;
+            angle = angleCurrent;
+            planeTransform.Rotate(new Vector3(0, 0, angelDelta));
+            planeTransform.Translate(new Vector2(1, 0) * speed * Time.fixedDeltaTime);
         }
    }
 
@@ -111,7 +132,7 @@ public class MoveMain : MonoBehaviour
     private void ChangeTrajectory()
     {
         Invoke("CreateLin", .9f);
-        // Invoke("CreateTrajectorySin", .9f);
+        // Invoke("CreateSin", .9f);
     }
     private void pointCollision(Vector2 targetPosition)
     {
