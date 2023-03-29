@@ -102,8 +102,6 @@ public class MoveMain : MonoBehaviour
         else if (planeObj && trajectoryType == "sin")
         {
             float x = planeTransform.position.x;
-            float y_prime = magnitude * frequency * Mathf.Cos(x * frequency); // похідна функції у точці x
-            Vector2 tangent = new Vector2(x, y_prime).normalized;
             float angleCurrent = Mathf.Atan(Mathf.Cos(x * frequency) * frequency * magnitude) * Mathf.Rad2Deg;
             float angelDelta = angleCurrent - angle;
             angle = angleCurrent;
@@ -136,7 +134,6 @@ public class MoveMain : MonoBehaviour
 
         CreateLin();
         // CreateSin();
-
     }
     private void pointCollision(Vector2 targetPosition)
     {
@@ -151,14 +148,16 @@ public class MoveMain : MonoBehaviour
             Vector2 targetDirection = processTargetPosition - ppoPosition;
             float distance = targetDirection.magnitude;
             float flayTime = distance / projectileSpeed;
-            Vector2 targetDrive = planeNormVector * flayTime * speed;//змінити розрахунок нової позиції
+            Vector2 targetDrive = DriveToPosition(flayTime);
+            // Vector2 targetDrive = planeNormVector * flayTime * speed;
             newTargetPosition = currentPlanePosition + targetDrive;
 
             //перевірка на влучання
             Vector2 newTargetDirection = newTargetPosition - ppoPosition;           
             float newDistance = newTargetDirection.magnitude;
             float newFlayTime = newDistance / projectileSpeed;
-            Vector2 newTargetDrive = planeNormVector * newFlayTime * speed;//змінити розрахунок нової позиції
+            Vector2 newTargetDrive = DriveToPosition(newFlayTime);
+            // Vector2 newTargetDrive = planeNormVector * newFlayTime * speed;
             Vector2 controlTargetPosition = currentPlanePosition + newTargetDrive;
             
            
@@ -193,6 +192,16 @@ public class MoveMain : MonoBehaviour
         }        
     }
     
+    private Vector2 DriveToPosition(float flayTime){
+        if(trajectoryType == "lin")
+        {
+            return planeNormVector * flayTime * speed;
+        }else{
+            return new Vector2(0, 0);
+            Debug.Log("wtf");
+        }
+        
+    }
 
 
 

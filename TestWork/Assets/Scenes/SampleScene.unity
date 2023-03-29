@@ -322,8 +322,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33da3ff3181c5c54db8bf4a65f2a34f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 150
-  projectileSpeed: 170
+  speed: 80
+  projectileSpeed: 160
   planePrefab: {fileID: 6898730427614630819, guid: dcf8f69726bd449469559c445c719712, type: 3}
   marker: {fileID: 2313740472436937064, guid: ffda34c90b7f1bb44a0af2b3ad4bb3df, type: 3}
   ppo: {fileID: 460337169}
