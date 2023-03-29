@@ -48,11 +48,6 @@ public class MoveMain : MonoBehaviour
         angle = Mathf.Atan2(planeNormVector.y, planeNormVector.x) * Mathf.Rad2Deg;
         planeTransform.Rotate(new Vector3(0, 0, angle));
         planeTransform.position = startPosition;
-
-        // planeObj = Instantiate(planePrefab, startPosition, Quaternion.Euler(0, 0, angle));
-        // planeObj.name = "plane";
-        // planeTransform = planeObj.transform;
-        // planeTransform.parent = planeContainer.transform;
     }
 
     private void CreateSin(){
@@ -139,14 +134,15 @@ public class MoveMain : MonoBehaviour
         planeTransform = planeObj.transform;
         planeTransform.parent = planeContainer.transform;
 
-        // CreateLin();
-        CreateSin();
+        CreateLin();
+        // CreateSin();
 
     }
     private void pointCollision(Vector2 targetPosition)
     {
         bool allowContinue = true;
         int i = 0;
+        Vector2 newTargetPosition = new Vector2(0, 0);
         Vector2 currentPlanePosition = planeTransform.position;
         Vector2 processTargetPosition = targetPosition;
         while (allowContinue)
@@ -155,50 +151,44 @@ public class MoveMain : MonoBehaviour
             Vector2 targetDirection = processTargetPosition - ppoPosition;
             float distance = targetDirection.magnitude;
             float flayTime = distance / projectileSpeed;
-            Vector2 targetDrive = planeNormVector * flayTime * speed;
-            Vector2 newTargetPosition = currentPlanePosition + targetDrive;
+            Vector2 targetDrive = planeNormVector * flayTime * speed;//змінити розрахунок нової позиції
+            newTargetPosition = currentPlanePosition + targetDrive;
 
             //перевірка на влучання
             Vector2 newTargetDirection = newTargetPosition - ppoPosition;           
             float newDistance = newTargetDirection.magnitude;
             float newFlayTime = newDistance / projectileSpeed;
-            Vector2 newTargetDrive = planeNormVector * newFlayTime * speed;
+            Vector2 newTargetDrive = planeNormVector * newFlayTime * speed;//змінити розрахунок нової позиції
             Vector2 controlTargetPosition = currentPlanePosition + newTargetDrive;
             
            
             Vector2 difference = controlTargetPosition - newTargetPosition;
             i++;
+
             if (difference.magnitude > 2)
             {
                 processTargetPosition = newTargetPosition;
             }else{
                 allowContinue = false;
                 Color colorGreen = new Color(1f, 230f, 0.00f, 1.00f);
-
-                if(newTargetPosition.x<-10f||newTargetPosition.x >420)
-                {
-                    intersectionPoint.SetActive(false);
-                } else
-                {
-                    intersectionPoint.SetActive(true);
-                    intersectionPoint.transform.position = newTargetPosition;
-                    intersectionPoint.GetComponent<SpriteRenderer>().color = colorGreen;
-                }                
+                intersectionPoint.GetComponent<SpriteRenderer>().color = colorGreen;              
             }
-            if(i>10){
+
+            if(i>10)
+            {
                 allowContinue = false;
                 Color colorRed = new Color(190f, 0f, 0f, 1.0f);
+                intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;            
+            }
 
-                if (newTargetPosition.x < -10f || newTargetPosition.x > 420)
-                {
-                    intersectionPoint.SetActive(false);
-                }
-                else
-                {
-                    intersectionPoint.SetActive(true);
-                    intersectionPoint.transform.position = newTargetPosition;
-                    intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;
-                }
+            if (newTargetPosition.x < -10f || newTargetPosition.x > 420)
+            {
+                intersectionPoint.SetActive(false);
+            }
+            else
+            {
+                intersectionPoint.SetActive(true);
+                intersectionPoint.transform.position = newTargetPosition;
             }                       
         }        
     }
