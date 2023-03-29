@@ -132,8 +132,8 @@ public class MoveMain : MonoBehaviour
         planeTransform = planeObj.transform;
         planeTransform.parent = planeContainer.transform;
 
-        CreateLin();
-        // CreateSin();
+        // CreateLin();
+        CreateSin();
     }
     private void pointCollision(Vector2 targetPosition)
     {
@@ -149,7 +149,6 @@ public class MoveMain : MonoBehaviour
             float distance = targetDirection.magnitude;
             float flayTime = distance / projectileSpeed;
             Vector2 targetDrive = DriveToPosition(flayTime);
-            // Vector2 targetDrive = planeNormVector * flayTime * speed;
             newTargetPosition = currentPlanePosition + targetDrive;
 
             //перевірка на влучання
@@ -157,14 +156,13 @@ public class MoveMain : MonoBehaviour
             float newDistance = newTargetDirection.magnitude;
             float newFlayTime = newDistance / projectileSpeed;
             Vector2 newTargetDrive = DriveToPosition(newFlayTime);
-            // Vector2 newTargetDrive = planeNormVector * newFlayTime * speed;
             Vector2 controlTargetPosition = currentPlanePosition + newTargetDrive;
             
            
             Vector2 difference = controlTargetPosition - newTargetPosition;
             i++;
 
-            if (difference.magnitude > 2)
+            if (difference.magnitude > 1f)
             {
                 processTargetPosition = newTargetPosition;
             }else{
@@ -173,11 +171,13 @@ public class MoveMain : MonoBehaviour
                 intersectionPoint.GetComponent<SpriteRenderer>().color = colorGreen;              
             }
 
-            if(i>10)
+            if(i>15)
             {
                 allowContinue = false;
                 Color colorRed = new Color(190f, 0f, 0f, 1.0f);
-                intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;            
+                if(difference.magnitude>7f){
+                    intersectionPoint.GetComponent<SpriteRenderer>().color = colorRed;
+                }           
             }
 
             if (newTargetPosition.x < -10f || newTargetPosition.x > 420)
@@ -196,15 +196,23 @@ public class MoveMain : MonoBehaviour
         if(trajectoryType == "lin")
         {
             return planeNormVector * flayTime * speed;
+        }
+        else if (trajectoryType == "sin")
+        {
+            float x = planeTransform.position.x;
+            Vector2 processPosition = planeTransform.position;
+            float deltaT = 0.02f;
+            for (float i = 0; i <= flayTime;i+=deltaT)
+            {
+                Vector2 tangent = new Vector2(1f,Mathf.Cos(x * frequency) * frequency * magnitude ).normalized;
+                processPosition += tangent * deltaT * speed;             
+                x = processPosition.x;
+            }           
+            return processPosition - new Vector2(planeTransform.position.x,planeTransform.position.y);
         }else{
             return new Vector2(0, 0);
             Debug.Log("wtf");
-        }
-        
+        }     
     }
-
-
-
-  
 }
 
