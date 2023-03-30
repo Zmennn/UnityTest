@@ -19,7 +19,7 @@ public class MoveMain : MonoBehaviour
 
 
     void Start()
-    {       
+    {     
        ppoPosition=ppo.GetComponent<Transform>().position;
         ChangeTrajectory();
     }
