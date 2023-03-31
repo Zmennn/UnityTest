@@ -211,7 +211,6 @@ public class MoveMain : MonoBehaviour
             return processPosition - new Vector2(planeTransform.position.x,planeTransform.position.y);
         }else{
             return new Vector2(0, 0);
-            Debug.Log("wtf");
         }     
     }
 }

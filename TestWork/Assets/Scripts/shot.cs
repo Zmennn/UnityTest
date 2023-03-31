@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shot : MonoBehaviour
 {
     private GameObject pointOfIntersection, projectile, containerTrajectory, traceContainer;
-    public GameObject addPoint, containerPrefab, projectilePrefab,tracePrefab,cam,cannon;
+    public GameObject addPoint, containerPrefab, projectilePrefab,tracePrefab,cam,cannon,shotAnim;
     private MoveMain moveMain;
     private Vector2 ppoPosition,point,oldVector;
     bool isLock = false;
@@ -65,7 +65,6 @@ public class Shot : MonoBehaviour
         float targetAngle = Mathf.Atan2(targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
         float currentAngle = cannon.transform.rotation.eulerAngles.z;
         float deltaAngle = targetAngle - currentAngle;
-        Debug.Log("targetAngle: " + targetAngle+"   currentAngle"+currentAngle);
         Vector3 ppoPositionGlobal3 = transform.TransformPoint(new Vector2(0,0));
         Vector2 ppoPositionGlobal = new Vector2(ppoPositionGlobal3.x, ppoPositionGlobal3.y);
         cannon.transform.RotateAround(ppoPositionGlobal, new Vector3(0,0,1), deltaAngle);
@@ -86,6 +85,8 @@ public class Shot : MonoBehaviour
             float angle = Mathf.Atan2( targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
             projectile = Instantiate(projectilePrefab, ppoPosition , Quaternion.Euler(0, 0, angle));           
             projectile.transform.parent=traceContainer.transform;
+            var shotAnimation = Instantiate(shotAnim, cannon.transform);
+            
         }
 
         if (!Input.GetKey(KeyCode.Space) && isLock){
