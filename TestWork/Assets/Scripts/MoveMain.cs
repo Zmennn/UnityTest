@@ -132,8 +132,8 @@ public class MoveMain : MonoBehaviour
         planeTransform = planeObj.transform;
         planeTransform.parent = planeContainer.transform;
 
-        // CreateLin();
-        CreateSin();
+        CreateLin();
+        // CreateSin();
     }
     private void pointCollision(Vector2 targetPosition)
     {
