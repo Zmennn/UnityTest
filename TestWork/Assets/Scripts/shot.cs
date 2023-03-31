@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,9 +8,12 @@ public class Shot : MonoBehaviour
     private GameObject pointOfIntersection, projectile, containerTrajectory, traceContainer;
     public GameObject addPoint, containerPrefab, projectilePrefab,tracePrefab,cam,cannon,shotAnim;
     private MoveMain moveMain;
-    private Vector2 ppoPosition,point,oldVector;
-    bool isLock = false;
-    
+    private Vector2 ppoPosition,point,oldVector,targetNorm;
+    private bool isLock = false;
+    private bool permissionToReset = true;
+    private int countShots = 10;
+    private int rateOfFire = 600;
+
 
     private void Start()
     {
@@ -33,7 +37,7 @@ public class Shot : MonoBehaviour
                     continue;
                 }
                 projectiles[i].transform.Translate(new Vector2(1, 0) * moveMain.projectileSpeed * Time.fixedDeltaTime);
-                Vector2 randomVector = new Vector2(Random.Range(-0.8f, 0.8f), Random.Range(-0.3f, 0.3f));
+                Vector2 randomVector = new Vector2(UnityEngine.Random.Range(-0.8f, 0.8f), UnityEngine.Random.Range(-0.3f, 0.3f));
                 Vector2 posVector = new Vector2(projectiles[i].transform.position.x, projectiles[i].transform.position.y);
                 if((projectiles[i].transform.position-transform.position).magnitude>17)
                 {
@@ -60,7 +64,7 @@ public class Shot : MonoBehaviour
         Vector3 targetMiddle = pointOfIntersection.transform.position;
         Vector2 targetAbs = new Vector2(targetMiddle.x, targetMiddle.y);
         Vector2 target = targetAbs - ppoPosition;
-        Vector2 targetNorm = target.normalized;
+        targetNorm = target.normalized;
 
         float targetAngle = Mathf.Atan2(targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
         float currentAngle = cannon.transform.rotation.eulerAngles.z;
@@ -80,17 +84,31 @@ public class Shot : MonoBehaviour
 
         if ((Input.GetKey(KeyCode.Space)&&!isLock)){           
             isLock = true;
-            traceContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
-            traceContainer.name = "ProjectileContainer";
-            float angle = Mathf.Atan2( targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
-            projectile = Instantiate(projectilePrefab, ppoPosition , Quaternion.Euler(0, 0, angle));           
-            projectile.transform.parent=traceContainer.transform;
-            var shotAnimation = Instantiate(shotAnim, cannon.transform);
             
+
+            StartCoroutine(shot());      
         }
 
-        if (!Input.GetKey(KeyCode.Space) && isLock){
+        if (!Input.GetKey(KeyCode.Space) && isLock && permissionToReset){
             isLock = false;
         }       
+    }
+
+    private IEnumerator shot()
+    {
+        permissionToReset = false;
+        for (int i = 0; i < countShots; i++)
+        {
+            traceContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
+            traceContainer.name = "ProjectileContainer";
+            float angle = Mathf.Atan2(targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
+            projectile = Instantiate(projectilePrefab, ppoPosition, Quaternion.Euler(0, 0, angle));
+            projectile.transform.parent = traceContainer.transform;
+            var shotAnimation = Instantiate(shotAnim, cannon.transform);
+
+            Debug.Log(60f / rateOfFire);
+            yield return new WaitForSeconds(60f/rateOfFire);
+        }
+        permissionToReset = true;
     }
 }
