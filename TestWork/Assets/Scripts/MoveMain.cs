@@ -117,7 +117,6 @@ public class MoveMain : MonoBehaviour
 
    private void ChangeTrajectory(){
         Invoke("ChangeTrajectoryWait", 1.2f);
-        // ChangeTrajectoryWait();
     }
 
     private void ChangeTrajectoryWait()
