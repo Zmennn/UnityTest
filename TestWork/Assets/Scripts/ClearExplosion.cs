@@ -7,7 +7,7 @@ public class ClearExplosion : MonoBehaviour
     
     void Start()
     {
-        Destroy(gameObject, .5f);
+        Destroy(gameObject, 1.5f);
     }
 
 }

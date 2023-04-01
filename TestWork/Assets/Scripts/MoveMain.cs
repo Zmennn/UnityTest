@@ -116,8 +116,8 @@ public class MoveMain : MonoBehaviour
    }
 
    private void ChangeTrajectory(){
-        // Invoke("ChangeTrajectoryWait", 0.5f);
-        ChangeTrajectoryWait();
+        Invoke("ChangeTrajectoryWait", 1.2f);
+        // ChangeTrajectoryWait();
     }
 
     private void ChangeTrajectoryWait()
@@ -133,8 +133,8 @@ public class MoveMain : MonoBehaviour
         planeTransform = planeObj.transform;
         planeTransform.parent = planeContainer.transform;
 
-        CreateLin();
-        // CreateSin();
+        // CreateLin();
+        CreateSin();
     }
     private void pointCollision(Vector2 targetPosition)
     {

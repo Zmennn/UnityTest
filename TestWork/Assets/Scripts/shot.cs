@@ -10,9 +10,10 @@ public class Shot : MonoBehaviour
     private MoveMain moveMain;
     private Vector2 ppoPosition,point,oldVector,targetNorm;
     private bool isLock = false;
-    private bool permissionToReset = true;
-    private int countShots = 10;
-    private int rateOfFire = 600;
+    private bool isFire = false;
+    private int countShots = 5;
+    private int rateOfFire = 500;
+    private float dispersion = 3;
 
 
     private void Start()
@@ -24,12 +25,11 @@ public class Shot : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (projectile)
-        {
-            var projectiles = GameObject.FindGameObjectsWithTag("projectile");
 
-            for (int i = 0; i < projectiles.Length; i++)
-            {
+        var projectiles = GameObject.FindGameObjectsWithTag("projectile");
+
+        for (int i = 0; i < projectiles.Length; i++)
+        {
                 if(projectiles[i].transform.position.x<0||projectiles[i].transform.position.x>440||
                 projectiles[i].transform.position.y < 0 || projectiles[i].transform.position.y > 220)
                 {
@@ -42,12 +42,12 @@ public class Shot : MonoBehaviour
                 if((projectiles[i].transform.position-transform.position).magnitude>17)
                 {
                     var trace = Instantiate(tracePrefab, posVector + randomVector, Quaternion.identity);
-                    trace.transform.parent = traceContainer.transform;
+                    trace.transform.parent = projectiles[i].transform.parent;
                 }
                 
-            }
-
         }
+
+
 
         if (containerTrajectory)
         {
@@ -64,7 +64,14 @@ public class Shot : MonoBehaviour
         Vector3 targetMiddle = pointOfIntersection.transform.position;
         Vector2 targetAbs = new Vector2(targetMiddle.x, targetMiddle.y);
         Vector2 target = targetAbs - ppoPosition;
-        targetNorm = target.normalized;
+        if(dispersion==0||!isFire)
+        {
+            targetNorm = target.normalized;
+        } else{
+            float targetAngleDis = Mathf.Atan2(target.y, target.x) * Mathf.Rad2Deg + UnityEngine.Random.Range(-dispersion, dispersion);
+            targetNorm = (Quaternion.Euler(0, 0, targetAngleDis) * Vector2.right).normalized;
+        }
+        
 
         float targetAngle = Mathf.Atan2(targetNorm.y, targetNorm.x) * Mathf.Rad2Deg;
         float currentAngle = cannon.transform.rotation.eulerAngles.z;
@@ -84,19 +91,16 @@ public class Shot : MonoBehaviour
 
         if ((Input.GetKey(KeyCode.Space)&&!isLock)){           
             isLock = true;
-            
-
             StartCoroutine(shot());      
         }
-
-        if (!Input.GetKey(KeyCode.Space) && isLock && permissionToReset){
+        if (!Input.GetKey(KeyCode.Space) && isLock && !isFire){
             isLock = false;
         }       
     }
 
     private IEnumerator shot()
     {
-        permissionToReset = false;
+        isFire = true;
         for (int i = 0; i < countShots; i++)
         {
             traceContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
@@ -105,10 +109,8 @@ public class Shot : MonoBehaviour
             projectile = Instantiate(projectilePrefab, ppoPosition, Quaternion.Euler(0, 0, angle));
             projectile.transform.parent = traceContainer.transform;
             var shotAnimation = Instantiate(shotAnim, cannon.transform);
-
-            Debug.Log(60f / rateOfFire);
             yield return new WaitForSeconds(60f/rateOfFire);
         }
-        permissionToReset = true;
+        isFire = false;
     }
 }
