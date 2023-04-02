@@ -10,21 +10,22 @@ public class MoveMain : MonoBehaviour
     [NonSerialized] public int countShots = 1, rateOfFire = 300 ;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
-    private float angle,k;
+    private float angle,k,x;
     private Transform  planeTransformSin, planeTransform, addPointTransform;
-    public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab,tracePrefab;
+    public GameObject planePrefab, marker, ppo, intersectionPointPrefab, addPointPrefab,containerPrefab,tracePrefab, canvasPrefab;
     private float magnitude,frequency;
     private Vector2 pointOfIntersection;
     private GameObject intersectionPoint,planeObj,addPoint,planeContainer;
     private float time;
     private string trajectoryType;
-
+    private bool isLock = false;
 
     void Start()
-    {     
-       ppoPosition=ppo.GetComponent<Transform>().position;
+    {
+        ppoPosition=ppo.GetComponent<Transform>().position;
         ChangeTrajectory();
     }
+    
     private void CreateLin()
     {
         trajectoryType = "lin";
@@ -44,9 +45,6 @@ public class MoveMain : MonoBehaviour
             elem.name = "planeTrajectoryMark";
             elem.transform.parent = planeContainer.transform;
             }
-     
-        
-
         angle = Mathf.Atan2(planeNormVector.y, planeNormVector.x) * Mathf.Rad2Deg;
         planeTransform.Rotate(new Vector3(0, 0, angle));
         planeTransform.position = startPosition;
@@ -74,11 +72,23 @@ public class MoveMain : MonoBehaviour
      
         planeTransform.position = startPosition = new Vector2(0, b); ;
         angle = 0;
-    }
-
-    float x;
+    }  
     private void FixedUpdate()
     {
+        if(Input.GetKey(KeyCode.Escape)&&!isLock){
+            isLock = true;
+            var isObj = GameObject.Find("Menu");
+            if(isObj){
+                Destroy(isObj);
+            }else
+            {
+                GameObject menu = Instantiate(canvasPrefab);
+                menu.name = "Menu";
+            }           
+        }
+        if (!Input.GetKey(KeyCode.Escape) && isLock){
+            isLock = false;
+        }
         if (planeObj)
         {
             for (short i = 0; i < 5; i++)
@@ -95,7 +105,6 @@ public class MoveMain : MonoBehaviour
                 DestroyPlane();
                 return;
             }
-
         }
         if (planeObj && trajectoryType == "lin")
         {
@@ -134,8 +143,14 @@ public class MoveMain : MonoBehaviour
         planeTransform = planeObj.transform;
         planeTransform.parent = planeContainer.transform;
 
-        // CreateLin();
-        CreateSin();
+        if(UnityEngine.Random.Range(1, 3)==1)
+        {
+            CreateLin();
+        }
+        else
+        {
+            CreateSin();
+        }
     }
     private void pointCollision(Vector2 targetPosition)
     {
