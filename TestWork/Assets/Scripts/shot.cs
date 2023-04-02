@@ -11,9 +11,9 @@ public class Shot : MonoBehaviour
     private Vector2 ppoPosition,point,oldVector,targetNorm;
     private bool isLock = false;
     private bool isFire = false;
-    private int countShots = 5;
-    private int rateOfFire = 500;
-    private float dispersion = 3;
+    // [NonSerialized] public int countShots = 1;
+    [NonSerialized] public int rateOfFire = 500;
+    [NonSerialized] public float dispersion = 3;
 
 
     private void Start()
@@ -101,7 +101,7 @@ public class Shot : MonoBehaviour
     private IEnumerator shot()
     {
         isFire = true;
-        for (int i = 0; i < countShots; i++)
+        for (int i = 0; i < moveMain.countShots; i++)
         {
             traceContainer = Instantiate(containerPrefab, new Vector2(0, 0), Quaternion.identity);
             traceContainer.name = "ProjectileContainer";

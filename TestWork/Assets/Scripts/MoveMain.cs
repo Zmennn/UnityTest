@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class MoveMain : MonoBehaviour
 {
     private Vector3 point;   
-    public float speed = 80f,projectileSpeed=160f;
+    [NonSerialized] public float speed= 25f,projectileSpeed = 125f;
+    [NonSerialized] public int countShots = 1;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
     private float angle,k;
@@ -81,7 +83,7 @@ public class MoveMain : MonoBehaviour
         {
             for (short i = 0; i < 5; i++)
             {
-                Vector2 randomVector = new Vector2(Random.Range(-.8f, .8f), Random.Range(-2.3f, 2.3f));
+                Vector2 randomVector = new Vector2(UnityEngine.Random.Range(-.8f, .8f), UnityEngine.Random.Range(-2.3f, 2.3f));
                 Vector2 posVector = new Vector2(planeTransform.position.x, planeTransform.position.y);
                 var position = new Vector2(planeTransform.GetChild(0).transform.position.x, planeTransform.GetChild(0).transform.position.y);
                 var trace = Instantiate(tracePrefab, position + randomVector, Quaternion.identity);

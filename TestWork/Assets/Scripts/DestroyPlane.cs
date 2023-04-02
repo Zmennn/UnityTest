@@ -11,7 +11,7 @@ public class DestroyPlane : MonoBehaviour
 
     private void Start()
     {
-        GameObject cam = GameObject.Find("Main Camera");
+        GameObject cam = GameObject.Find("Camera");
         moveMain = cam.GetComponent<MoveMain>();       
     }
 
