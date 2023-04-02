@@ -6,8 +6,8 @@ using System;
 public class MoveMain : MonoBehaviour
 {
     private Vector3 point;   
-    [NonSerialized] public float speed= 25f,projectileSpeed = 125f;
-    [NonSerialized] public int countShots = 1;
+    [NonSerialized] public float speed= 25f,projectileSpeed = 125f, dispersion=0f;
+    [NonSerialized] public int countShots = 1, rateOfFire = 300 ;
     Vector2 planeNormVector;
     private Vector2 startPosition,ppoPosition;
     private float angle,k;

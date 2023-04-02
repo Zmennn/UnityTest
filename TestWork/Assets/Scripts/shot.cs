@@ -11,10 +11,6 @@ public class Shot : MonoBehaviour
     private Vector2 ppoPosition,point,oldVector,targetNorm;
     private bool isLock = false;
     private bool isFire = false;
-    // [NonSerialized] public int countShots = 1;
-    [NonSerialized] public int rateOfFire = 500;
-    [NonSerialized] public float dispersion = 3;
-
 
     private void Start()
     {
@@ -64,11 +60,11 @@ public class Shot : MonoBehaviour
         Vector3 targetMiddle = pointOfIntersection.transform.position;
         Vector2 targetAbs = new Vector2(targetMiddle.x, targetMiddle.y);
         Vector2 target = targetAbs - ppoPosition;
-        if(dispersion==0||!isFire)
+        if(moveMain.dispersion==0||!isFire)
         {
             targetNorm = target.normalized;
         } else{
-            float targetAngleDis = Mathf.Atan2(target.y, target.x) * Mathf.Rad2Deg + UnityEngine.Random.Range(-dispersion, dispersion);
+            float targetAngleDis = Mathf.Atan2(target.y, target.x) * Mathf.Rad2Deg + UnityEngine.Random.Range(-moveMain.dispersion, moveMain.dispersion);
             targetNorm = (Quaternion.Euler(0, 0, targetAngleDis) * Vector2.right).normalized;
         }
         
@@ -109,7 +105,7 @@ public class Shot : MonoBehaviour
             projectile = Instantiate(projectilePrefab, ppoPosition, Quaternion.Euler(0, 0, angle));
             projectile.transform.parent = traceContainer.transform;
             var shotAnimation = Instantiate(shotAnim, cannon.transform);
-            yield return new WaitForSeconds(60f/rateOfFire);
+            yield return new WaitForSeconds(60f/moveMain.rateOfFire);
         }
         isFire = false;
     }
